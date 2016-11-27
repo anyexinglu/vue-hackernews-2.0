@@ -1,99 +1,45 @@
+// The single state tree does not conflict with modularity
+// In some circumstances you can split your state and mutations into sub modules.
+// 如果有些状态严格属于单个组件，最好还是作为组件的局部状态。
+
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { fetchItems, fetchIdsByType, fetchUser } from './api'
+import { fetchCustomers, fetchBills } from './api'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    activeType: null,
-    itemsPerPage: 20,
-    items: {/* [id: number]: Item */},
-    users: {/* [id: string]: User */},
-    lists: {
-      top: [/* number */],
-      new: [],
-      show: [],
-      ask: [],
-      job: []
-    }
+    customers: [],
+    bills: []
   },
 
   actions: {
-    // ensure data for rendering given list type
-    FETCH_LIST_DATA: ({ commit, dispatch, state }, { type }) => {
-      commit('SET_ACTIVE_TYPE', { type })
-      return fetchIdsByType(type)
-        .then(ids => commit('SET_LIST', { type, ids }))
-        .then(() => dispatch('ENSURE_ACTIVE_ITEMS'))
+    FETCH_CUSTOMERS: ({ commit, state }) => {
+      // only fetch customers that we don't already have.
+      return fetchCustomers().then(items => commit('SET_CUSTOMERS', { items }))
     },
-
-    // ensure all active items are fetched
-    ENSURE_ACTIVE_ITEMS: ({ dispatch, getters }) => {
-      return dispatch('FETCH_ITEMS', {
-        ids: getters.activeIds
-      })
-    },
-
-    FETCH_ITEMS: ({ commit, state }, { ids }) => {
-      // only fetch items that we don't already have.
-      ids = ids.filter(id => !state.items[id])
-      if (ids.length) {
-        return fetchItems(ids).then(items => commit('SET_ITEMS', { items }))
-      } else {
-        return Promise.resolve()
-      }
-    },
-
-    FETCH_USER: ({ commit, state }, { id }) => {
-      return state.users[id]
-        ? Promise.resolve(state.users[id])
-        : fetchUser(id).then(user => commit('SET_USER', { user }))
+    FETCH_BILLS: ({ commit, state }) => {
+      return fetchBills().then(items => commit('SET_BILLS', { items }))
     }
   },
 
+  // mutation 必须是同步函数
   mutations: {
-    SET_ACTIVE_TYPE: (state, { type }) => {
-      state.activeType = type
+    SET_CUSTOMERS: (state, { items }) => {
+      if (items) {
+        Vue.set(state, 'customers', items)
+      }
     },
-
-    SET_LIST: (state, { type, ids }) => {
-      state.lists[type] = ids
-    },
-
-    SET_ITEMS: (state, { items }) => {
-      items.forEach(item => {
-        if (item) {
-          Vue.set(state.items, item.id, item)
-        }
-      })
-    },
-
-    SET_USER: (state, { user }) => {
-      Vue.set(state.users, user.id, user)
+    SET_BILLS: (state, { items }) => {
+      if (items) {
+        Vue.set(state, 'bills', items)
+      }
     }
   },
 
   getters: {
-    // ids of the items that should be currently displayed based on
-    // current list type and current pagination
-    activeIds (state) {
-      const { activeType, itemsPerPage, lists } = state
-      const page = Number(state.route.params.page) || 1
-      if (activeType) {
-        const start = (page - 1) * itemsPerPage
-        const end = page * itemsPerPage
-        return lists[activeType].slice(start, end)
-      } else {
-        return []
-      }
-    },
 
-    // items that should be currently displayed.
-    // this Array may not be fully fetched.
-    activeItems (state, getters) {
-      return getters.activeIds.map(id => state.items[id]).filter(_ => _)
-    }
   }
 })
 

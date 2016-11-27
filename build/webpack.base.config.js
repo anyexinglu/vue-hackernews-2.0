@@ -21,8 +21,10 @@ module.exports = {
     filename: '[name].[chunkhash].js'
   },
   resolve: {
+    extensions: ['', '.js', '.css', '.scss'],
     alias: {
-      'public': path.resolve(__dirname, '../public')
+      'public': path.resolve(__dirname, '../public'),
+      'select2Style': path.resolve(__dirname, '../node_modules/select2/dist/css/select2.css'),
     }
   },
   module: {
@@ -32,6 +34,10 @@ module.exports = {
         test: /\.vue$/,
         loader: 'vue-loader',
         options: vueConfig
+      },
+      {
+        test: /\.(css)$/,
+        loader: 'style-loader!css-loader'
       },
       {
         test: /\.js$/,

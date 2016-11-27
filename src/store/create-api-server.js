@@ -3,7 +3,9 @@ import LRU from 'lru-cache'
 
 let api
 const config = {
-  databaseURL: 'https://hacker-news.firebaseio.com'
+    apiKey: "AIzaSyAWZGh9ydW4rxTibabG1cYCz7NfoYmTCcc",
+    authDomain: "hackernews-ea265.firebaseapp.com",
+    databaseURL: "https://hackernews-ea265.firebaseio.com",
 }
 const version = '/v0'
 
@@ -19,12 +21,30 @@ if (process.__API__) {
     maxAge: 1000 * 60 * 15 // 15 min cache
   })
 
+  // let newPostKey = api.child('customers').child('-KXEeLNXZFSN8-fLGZQB').push().key;
+
+  // let updates = {};
+  // updates['/customers/-KXEeLNXZFSN8-fLGZQB/' + newPostKey] = {
+  //     customerId: 'zhangsan',
+  //     customerName: '张三'
+  // };
+  // newPostKey = api.child('customers').push().key;
+  // updates['/customers/' + newPostKey] = {
+  //     customerId: 'lisi',
+  //     customerName: '李四'
+  // };
+  // newPostKey = api.child('customers').push().key;
+  // updates['/customers/' + newPostKey] = {
+  //     customerId: 'yangxiayan',
+  //     customerName: '杨夏燕'
+  // };
+
+  // api.update(updates);
+
   // cache the latest story ids
   api.cachedIds = {}
-  ;['top', 'new', 'show', 'ask', 'job'].forEach(type => {
-    api.child(`${type}stories`).on('value', snapshot => {
-      api.cachedIds[type] = snapshot.val()
-    })
+  api.child('customers').on('value', snapshot => {
+    api.cachedIds['customers'] = snapshot.val()
   })
 }
 
