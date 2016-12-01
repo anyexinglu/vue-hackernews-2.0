@@ -5,6 +5,12 @@ import router from './router'
 import { sync } from 'vuex-router-sync'
 import * as filters from './filters'
 
+import Vue from 'vue'
+
+// install components
+Vue.component('v-table', require('./components/Table.vue'))
+Vue.component('v-dialog', require('./components/Dialog.vue'))
+
 // sync the router with the vuex store.
 // this registers `store.state.route`
 sync(store, router)

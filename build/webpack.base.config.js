@@ -48,6 +48,14 @@ module.exports = {
         }
       },
       {
+          test: /\.(js|jsx)$/,
+          loader: 'babel-loader',
+          include: [
+            path.resolve(__dirname + '../node_modules/vue-tables-2/'),
+            path.resolve(__dirname + '../node_modules/vue-pagination-2/')
+          ]
+      },
+      {
         test: /\.(png|jpg|gif|svg)$/,
         loader: 'url-loader',
         options: {

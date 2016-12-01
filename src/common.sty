@@ -24,19 +24,18 @@ select
 input, textarea, keygen, select, button
   font-family global-font-family
 
+input
+  padding 4px
+  border 1px solid #aaa
+  border-radius 4px
 
+button
+  color #333
+  background #eee
+  border 1px solid #bbb
+  outline none
+  padding 3px 10px
+  border-radius 3px
 
-@media (max-width 860px)
-  .header .inner
-    padding 15px 30px
-
-@media (max-width 600px)
-  body
-    font-size 14px
-  .header
-    .inner
-      padding 15px
-    a
-      margin-right 1em
-    .github
-      display none
+.fr
+  float right

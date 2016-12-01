@@ -2,7 +2,7 @@
   <main class="test-view">
     <h3>申请消除意外欠款</h3>
     <section class="account-section">
-      <p class="section-title">申请对象信息</p>
+      <p class="section-title">申请对象信息{{accountOptions.length}}</p>
       <div class="section-item customer-item">
         <span>客户名称：</span>
         <selectEx :options="customerOptions" v-model="customerId" v-bind="customerSubData">
@@ -16,13 +16,6 @@
     </section>
     <section class="bill-list-section">
       <p class="section-title">消除欠款信息</p>
-      <div class="section-content">
-        <div class="form-group fr">
-          <label>筛选账单编号：</label>
-          <input type="text" class="search-input" v-model="searchQuery" />
-        </div>
-        <v-table :data-list="bills" :columns="columns" :search-key="searchQuery"></v-table>
-      </div>
     </section>
   </main>
 </template>
@@ -32,7 +25,16 @@ import $ from 'jquery'
 import u from 'underscore'
 import Vue from 'vue'
 import SelectEx from '../components/SelectEx.vue'
+// import VueTables from 'vue-tables-2'
+// var VueTables = require('vue-tables-2');  // adding this line causes the error
 
+// var VueResource = require('vue-resource');
+// Vue.use(VueResource);
+// import VueTables from 'vuetable-2/src/components/Vuetable.vue';
+
+// Vue.use(VueTables.client, {
+//   perPage: 25
+// });
 
 function fetchCustomers (store) {
   return store.dispatch('FETCH_CUSTOMERS')
@@ -63,27 +65,13 @@ export default {
           text: '请选择'
         }
       },
-      searchQuery: '',
-      columns: [{
-        title: '账单编号',
-        field: 'billingId',
-        isKey: true
-      }, {
-        title: '账单时间',
-        field: 'startTime'
-      }, {
-        title: '产品名称',
-        field: 'serviceName'
-      }, {
-        title: '消款金额',
-        field: 'remainPrice'
-      }],
       accountId: "",
       accountOptions: []
     }
   },
   computed: {
     bills () {
+      console.log(this.$store.state.bills)
       return this.$store.state.bills
     },
     customerOptions () {
@@ -129,12 +117,7 @@ main.view
   section
     margin-left 20px
     .section-item
-      margin-left 50px
       display inline-block
       select
         width 200px
-.section-content
-  margin-left 20px
-table
-  margin-top 10px
 </style>

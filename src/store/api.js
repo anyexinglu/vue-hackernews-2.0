@@ -40,7 +40,6 @@ export function fetchBills () {
   } else {
     return new Promise((resolve, reject) => {
       api.child(child).on('value', snapshot => {
-        console.log(snapshot)
         let list = [];
         snapshot.forEach(function(item) {
           list.push(item.val());
@@ -48,7 +47,6 @@ export function fetchBills () {
         // mark the timestamp when this item is cached
         // if (list) list.__lastUpdated = Date.now()
         cache && cache.set(child, list)
-        console.log(list)
         resolve(list)
       }, reject)
     })

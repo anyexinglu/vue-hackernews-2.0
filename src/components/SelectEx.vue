@@ -45,8 +45,6 @@ export default {
     }
   },
   mounted () {
-    require('./selectEx.css');
-
     let vm = this;
     let args = {};
     let data = this.options;
@@ -88,5 +86,6 @@ export default {
 }
 </script>
 
-<style lang="stylus">
+<style scoped>
+@import '~select2Style'
 </style>
