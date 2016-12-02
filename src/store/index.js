@@ -19,8 +19,8 @@ const store = new Vuex.Store({
       // only fetch customers that we don't already have.
       return fetchCustomers().then(items => commit('SET_CUSTOMERS', { items }))
     },
-    FETCH_BILLS: ({ commit, state }) => {
-      return fetchBills().then(items => commit('SET_BILLS', { items }))
+    FETCH_BILLS: ({ commit, state }, { accountId }) => {
+      return fetchBills(accountId).then(items => commit('SET_BILLS', { items }))
     }
   },
 

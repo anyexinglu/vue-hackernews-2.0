@@ -5,7 +5,7 @@
       <p class="section-title">申请对象信息</p>
       <div class="section-item customer-item">
         <span>客户名称：</span>
-        <selectEx :options="customerOptions" v-model="customerId" v-bind="customerSubData">
+        <selectEx :options="customerOptions" v-model="customerId" v-bind="customerSubData" v-on:input="customerChange">
         </selectEx>
       </div>
       <div class="section-item account-id-item">
@@ -21,7 +21,7 @@
           <label>筛选账单编号：</label>
           <input type="text" class="search-input" v-model="searchQuery" />
         </div>
-        <v-table :data-list="bills" :columns="columns" :search-key="searchQuery"></v-table>
+        <v-table :data-source="bills" :columns="columns" :search-key="searchQuery"></v-table>
       </div>
     </section>
   </main>
@@ -32,7 +32,6 @@ import $ from 'jquery'
 import u from 'underscore'
 import Vue from 'vue'
 import SelectEx from '../components/SelectEx.vue'
-
 
 function fetchCustomers (store) {
   return store.dispatch('FETCH_CUSTOMERS')
@@ -65,17 +64,17 @@ export default {
       },
       searchQuery: '',
       columns: [{
-        title: '账单编号',
+        name: '账单编号',
         field: 'billingId',
         isKey: true
       }, {
-        title: '账单时间',
+        name: '账单时间',
         field: 'startTime'
       }, {
-        title: '产品名称',
+        name: '产品名称',
         field: 'serviceName'
       }, {
-        title: '消款金额',
+        name: '消款金额',
         field: 'remainPrice'
       }],
       accountId: "",
@@ -106,6 +105,9 @@ export default {
     }
   },
   methods: {
+    customerChange: function (value) {
+      this.accountIdChange('')
+    },
     accountIdChange: function (value) {
       fetchBills(this.$store, {
         accountId: value

@@ -7,16 +7,13 @@ Vue.use(Router)
 
 import TestView from '../views/TestView.vue'
 import EchartsView from '../views/EchartsView.vue'
-import TryView from '../views/TryView.vue'
-import Home from '../views/Home.vue'
 
 export default new Router({
   mode: 'history',
   scrollBehavior: () => ({ y: 0 }),
   routes: [
     { path: '/test/:page(\\d+)?', component: TestView },
-    { path: '/try', component: TryView },
     { path: '/echarts/:page(\\d+)?', component: EchartsView },
-    { path: '/', component: Home }
+    { path: '/', redirect: '/test' }
   ]
 })

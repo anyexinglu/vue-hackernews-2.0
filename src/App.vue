@@ -1,8 +1,6 @@
 <template>
   <div id="app">
     <div class="hello">
-      <router-link to="/test">Try Demo</router-link>
-      <router-link to="/echarts">Try Echarts</router-link>
     </div>
     <router-view class="view"></router-view>
   </div>

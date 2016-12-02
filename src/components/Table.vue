@@ -1,20 +1,23 @@
 <template id="grid-template">
   <div>
     <div class="container">
-      <button class="btn" @click="openNewItemDialog('创建新项目')">新增</button>
+      <button class="btn" @click="openNewItemDialog('新增账单')">新增</button>
     </div>
-    <table>
+    <table v-bind:class="{ 'table-no-data': isEmpty }">
       <thead>
         <tr>
           <th v-for="col in columns">
-            {{ col.title }}
+            {{ col.name }}
           </th>
           <th>
             操作列
           </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody v-if="isEmpty">
+        <tr><td colspan="5">没有数据</td></tr>
+      </tbody>
+      <tbody v-else>
         <tr v-for="(item, index) in filteredDataList">
           <td v-for="col in columns">
             <span v-if="col.isKey">
@@ -23,6 +26,7 @@
             <span v-else>{{item[col.field]}}</span>
           </td>
           <td class="text-center">
+            <button class="btn-danger" @click="openEditItemDialog(item[keyColumn])">编辑</button>
             <button class="btn-danger" @click="deleteItem(item)">删除</button>
           </td>
         </tr>
@@ -40,33 +44,31 @@ import $ from 'jquery'
 import u from 'underscore'
 
 export default {
-  props: ['dataList', 'columns', 'searchKey'],
+  props: ['dataSource', 'columns', 'searchKey'],
   data: function() {
     return {
       mode: 0,
       title: '',
       showDialog: false,
-      keyColumn: '',
       item: {}
     }
   },
   computed: {
+    isEmpty () {
+      return this.dataSource && !this.dataSource.length
+    },
+    keyColumn () {    // 从columns数组中提取出主键列keyColumn
+      let keyColumnItem = u.find(this.columns, item => item.isKey);
+      return keyColumnItem ? keyColumnItem.field : '';
+    },
     // 表格数据过滤器
     filteredDataList:  function () {
-      // body...
       let self = this
-      let result = this.dataList.filter( (item) => {
+      let result = this.dataSource.filter( (item) => {
         return item[self.keyColumn || 'billingId'].indexOf(self.searchKey) !== -1
       });
       return result
     }
-  },
-  // 从columns数组中提取出主键列keyColumn
-  ready: function () {
-    let keyColumnItem = u.find(this.columns, item => item.isKey);
-    console.log(keyColumnItem)
-    keyColumnItem && (this.keyColumn = keyColumnItem.field);
-    console.log(this.keyColumn)
   },
   methods: {
     openNewItemDialog: function (title) {
@@ -83,7 +85,7 @@ export default {
       // 根据主键查找当前修改的数据
       let currentItem = this.findItemByKey(key)
       // 对话框的标题
-      this.title = 'Edit Item - ' + key
+      this.title = '编辑账单：' + key
       // mode = 2表示修改模式
       this.mode = 2
       // 将选中的数据拷贝到this.item
@@ -114,16 +116,16 @@ export default {
     },
     findItemByKey: function (key) {
       let keyColumn = this.keyColumn
-      for(let i = 0; i < this.dataList.length; i++){
-        if(this.dataList[i][keyColumn] === key){
-          return this.dataList[i]
+      for(let i = 0; i < this.dataSource.length; i++){
+        if(this.dataSource[i][keyColumn] === key){
+          return this.dataSource[i]
         }
       }
     },
     itemExists: function () {
       let keyColumn = this.keyColumn
-      for (let i = 0; i < this.dataList.length; i++) {
-        if (this.item[keyColumn] === this.dataList[i][keyColumn])
+      for (let i = 0; i < this.dataSource.length; i++) {
+        if (this.item[keyColumn] === this.dataSource[i][keyColumn])
           return true;
       }
       return false;
@@ -131,8 +133,8 @@ export default {
     createItem: function () {
       let keyColumn = this.keyColumn
       if (!this.itemExists()) {
-        // 将item追加到dataList
-        this.dataList.push(this.item)
+        // 将item追加到dataSource
+        this.dataSource.push(this.item)
         // 广播事件，传入参数false表示隐藏对话框
         this.showDialog = false;
         // 新建完数据后，重置item对象
@@ -145,11 +147,11 @@ export default {
       // 获取主键列
       let keyColumn = this.keyColumn
 
-      for (let i = 0; i < this.dataList.length; i++) {
-        // 根据主键查找要修改的数据，然后将this.item数据更新到this.dataList[i]
-        if (this.dataList[i][keyColumn] === this.item[keyColumn]) {
+      for (let i = 0; i < this.dataSource.length; i++) {
+        // 根据主键查找要修改的数据，然后将this.item数据更新到this.dataSource[i]
+        if (this.dataSource[i][keyColumn] === this.item[keyColumn]) {
           for (let j in this.item) {
-            this.dataList[i][j] = this.item[j]
+            this.dataSource[i][j] = this.item[j]
           }
           break;
         }
@@ -160,7 +162,7 @@ export default {
       this.item = {}
     },
     deleteItem: function (entry) {
-      let data = this.dataList
+      let data = this.dataSource
       data.forEach(function(item, i) {
         if(item === entry) {
           data.splice(i, 1)
@@ -178,6 +180,11 @@ export default {
 <style scoped>
 #grid-template {
   display: none;
+}
+.table-no-data {
+  td {
+    text-align: center;
+  }
 }
 
 table,

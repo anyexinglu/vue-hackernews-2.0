@@ -32,23 +32,26 @@ export function fetchCustomers () {
   }
 }
 
-export function fetchBills () {
+export function fetchBills (accountId) {
   const child = 'bills';
   const cache = api.cachedItems
   if (cache && cache.has(child)) {
     return Promise.resolve(cache.get(child))
   } else {
     return new Promise((resolve, reject) => {
-      api.child(child).on('value', snapshot => {
-        let list = [];
-        snapshot.forEach(function(item) {
-          list.push(item.val());
-        });
-        // mark the timestamp when this item is cached
-        // if (list) list.__lastUpdated = Date.now()
-        cache && cache.set(child, list)
-        resolve(list)
-      }, reject)
+      api.child(child)
+        .orderByChild("accountId")
+        .equalTo(accountId)
+        .on('value', snapshot => {
+          let list = [];
+          snapshot.forEach(function(item) {
+            list.push(item.val());
+          });
+          // mark the timestamp when this item is cached
+          // if (list) list.__lastUpdated = Date.now()
+          cache && cache.set(child, list)
+          resolve(list)
+        }, reject)
     })
   }
 }

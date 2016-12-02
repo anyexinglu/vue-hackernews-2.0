@@ -38,6 +38,10 @@ if (process.env.NODE_ENV === 'production') {
     stylus: ExtractTextPlugin.extract({
       loader: 'css-loader!stylus-loader',
       fallbackLoader: 'vue-style-loader' // <- this is a dep of vue-loader
+    }),
+    less: ExtractTextPlugin.extract({
+      loader: 'css-loader!less-loader',
+      fallbackLoader: 'vue-style-loader' // <- this is a dep of vue-loader
     })
   }
 
